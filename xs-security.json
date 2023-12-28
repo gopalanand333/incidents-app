@@ -3,6 +3,10 @@
     {
       "name": "$XSAPPNAME.support",
       "description": "support"
+    },
+    {
+      "name": "$XSAPPNAME.admin",
+      "description": "admin"
     }
   ],
   "attributes": [],
@@ -10,7 +14,9 @@
     {
       "name": "support",
       "description": "generated",
-      "scope-references": ["$XSAPPNAME.support"],
+      "scope-references": [
+        "$XSAPPNAME.support"
+      ],
       "attribute-references": []
     },
     {
