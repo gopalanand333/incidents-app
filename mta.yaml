@@ -131,9 +131,12 @@ resources:
   type: org.cloudfoundry.managed-service
   parameters:
     service: cloud-logging
-    service-plan: standard
+    service-plan: dev
+  properties:
+    ingest_otlp:
+      enabled: true
 parameters:
-  deploy_mode: html5-repo
+  deploy_mode: html5-repos
   enable-parallel-deployments: true
 build-parameters:
   before-all:

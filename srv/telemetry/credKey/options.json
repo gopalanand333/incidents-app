@@ -1,0 +1,5 @@
+{
+  "endpoint": "ingest-otlp-sf-e2821b11-a4e2-4a1b-ab3a-d175b47dcd6c.cls-01.cloud.logs.services.sap.hana.ondemand.com:443",
+  "crtPath": "./credkey/otlp.crt",
+  "keyPath": "./credkey/otlp.key"
+}

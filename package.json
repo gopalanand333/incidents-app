@@ -3,6 +3,10 @@
     "version": "1.0.0",
     "dependencies": {
         "@cap-js/telemetry": "^0.0.1-alpha.1",
+        "@opentelemetry/exporter-metrics-otlp-grpc": "^0.46.0",
+        "@opentelemetry/exporter-trace-otlp-grpc": "^0.46.0",
+        "@opentelemetry/instrumentation-express": "^0.34.0",
+        "@opentelemetry/instrumentation-http": "^0.46.0",
         "@sap/cds": ">=7",
         "@sap/cds-hana": "^2",
         "@sap/xssec": "^3",
@@ -33,12 +37,6 @@
         "app/incidents"
     ],
     "cds": {
-        "log": {
-            "levels": {
-                "cds": "trace",
-                "hana": "trace"
-            }
-        },
         "requires": {
             "incidents-app": {
                 "model": "@capire/incidents"
@@ -75,6 +73,20 @@
                                 "support"
                             ]
                         }
+                    }
+                }
+            },
+            "telemetry": {
+                "tracing": {
+                    "exporter": {
+                        "module": "@opentelemetry/exporter-trace-otlp-grpc",
+                        "class": "OTLPTraceExporter"
+                    }
+                },
+                "metrics": {
+                    "exporter": {
+                        "module": "@opentelemetry/exporter-metrics-otlp-grpc",
+                        "class": "OTLPMetricExporter"
                     }
                 }
             },
