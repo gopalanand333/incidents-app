@@ -1,5 +1,5 @@
 {
-  "name": "@capire/incidents",
+  "name": "incident-management",
   "version": "1.0.0",
   "calesi": {
     "@cap-js/audit-logging": "*",
@@ -13,10 +13,14 @@
   },
   "dependencies": {
     "@sap/cds": ">=7",
-    "express": "^4"
+    "@sap/xsenv": "^5.1.0",
+    "@sap/xssec": "^3",
+    "express": "^4",
+    "@sap/cds-hana": "^2"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^1.0.1",
+    "@sap/cds-dk": "^7",
     "@sap/ux-specification": "^1.108.4",
     "axios": "^1.4.0",
     "chai": "^4.3.7",
@@ -38,7 +42,9 @@
     "reset": "read -p 'This will irreversibly reset your working directory including ALL files in this git repo. Continue?' -n 1 -r && echo && if [[ $REPLY =~ ^[Yy]$ ]]; then git clean -fd && git reset --hard && npm i; fi"
   },
   "jest": {
-    "modulePathIgnorePatterns": ["<rootDir>/xmpls/"]
+    "modulePathIgnorePatterns": [
+      "<rootDir>/xmpls/"
+    ]
   },
   "sapux": [
     "app/incidents"
@@ -61,6 +67,10 @@
             }
           }
         }
+      },
+      "[production]": {
+        "auth": "mocked",
+        "db": "hana"
       }
     }
   },
