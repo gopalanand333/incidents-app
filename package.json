@@ -18,7 +18,9 @@
     "@opentelemetry/exporter-trace-otlp-grpc": "0.57.2",
     "@opentelemetry/host-metrics": "0.35.5",
     "@sap/cds": ">=8",
-    "express": "^4"
+    "express": "^4",
+    "@sap/xssec": "^4",
+    "@cap-js/hana": "^1"
   },
   "devDependencies": {
     "@cap-js/attachments": "^1",
@@ -64,11 +66,18 @@
       "[production]": {
         "telemetry": {
           "kind": "to-cloud-logging"
-        }
+        },
+        "auth": {
+          "kind": "xsuaa"
+        },
+        "db": "hana"
       },
       "destinations": true,
       "html5-runtime": true,
       "workzone": true
+    },
+    "sql": {
+      "native_hana_associations": false
     }
   },
   "private": true

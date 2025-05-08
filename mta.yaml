@@ -27,6 +27,10 @@ modules:
     requires:
       - name: incidents-cloud-logging
       - name: incidents-destination
+      - name: incidents-auth
+      - name: incidents-attachments
+      - name: incidents-auditlog
+      - name: incidents-db
 
   - name: incidents-app-deployer
     type: com.sap.application.content
@@ -87,6 +91,14 @@ modules:
               ServiceKeyName: incidents-auth-key
               sap.cloud.service: incidents.service
 
+  - name: incidents-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: incidents-db
+
 resources:
   - name: incidents-cloud-logging
     type: org.cloudfoundry.managed-service
@@ -137,3 +149,27 @@ resources:
     parameters:
       service: html5-apps-repo
       service-plan: app-runtime
+  - name: incidents-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: incidents-${org}-${space}
+        tenant-mode: dedicated
+  - name: incidents-attachments
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: objectstore
+      service-plan: standard
+  - name: incidents-auditlog
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: auditlog
+      service-plan: premium
+  - name: incidents-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
