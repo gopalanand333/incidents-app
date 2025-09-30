@@ -66,20 +66,6 @@
             "path": "/sap/opu/odata/sap/API_BUSINESS_PARTNER"
           }
         }
-      },
-      "FeedbackService": {
-        "kind": "odata-v4",
-        "[development]": {
-          "credentials": {
-            "url": "http://localhost:4006/odata/v4/feedback"
-          }
-        },
-        "[production]": {
-          "credentials": {
-            "destination": "feedback-service-dest",
-            "path": "/odata/v4/feedback"
-          }
-        }
       }
     }
   }
