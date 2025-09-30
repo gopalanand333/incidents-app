@@ -40,6 +40,7 @@ modules:
         properties:
           srv-url: ${default-url}
     parameters:
+      instances: 2
       buildpack: nodejs_buildpack
       readiness-health-check-http-endpoint: /health
       readiness-health-check-type: http
