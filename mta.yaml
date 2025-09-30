@@ -27,13 +27,13 @@ modules:
               - metric_type: throughput
                 breach_duration_secs: 60
                 threshold: 40
-                operator: '>='
-                adjustment: +2
+                operator: ">="
+                adjustment: "+2"
               - metric_type: throughput
                 breach_duration_secs: 300
                 threshold: 10
-                operator: '>='
-                adjustment: -2
+                operator: ">="
+                adjustment: "-2"
       - name: xp265-cl
     provides:
       - name: srv-api
