@@ -11,6 +11,15 @@ class ProcessorService extends cds.ApplicationService {
     this.on(['CREATE','UPDATE'], 'Incidents', (req, next) => this.onCustomerCache(req, next));
     this.S4bupa = await cds.connect.to('OP_API_BUSINESS_PARTNER_SRV');
     this.remoteService = await cds.connect.to('RemoteService');
+    
+    // Initialize feedback service connection (optional - for direct CAP service calls)
+    try {
+      this.feedbackService = await cds.connect.to('FeedbackService');
+      logger.info("Connected to FeedbackService");
+    } catch (error) {
+      logger.warn("Could not connect to FeedbackService, will use HTTP fallback:", error.message);
+    }
+    
     return super.init();
   }
 
@@ -99,6 +108,13 @@ async onCustomerRead(req) {
    logger.info("Request id is: ", req.data.ID);
     const { status_code } = await SELECT.one(req.subject, i => i.status_code).where({ ID: req.data.ID })
     logger.info("Status code is: ", status_code);
+    
+    // Check if incident is being closed
+    if (req.data.status_code === 'C' && status_code !== 'C') {
+      logger.info("Incident is being closed, triggering feedback service...");
+      await this.triggerFeedbackService(req.data.ID);
+    }
+    
     if (status_code === 'C'){
       try {
         throw new Error("Incident state doesn't allow further modifications.");
@@ -108,6 +124,147 @@ async onCustomerRead(req) {
         logger.info("Incident state is being update from In process to Closed, by external process (Inbound API)");
       }
       return req.reject(`Incident state doesn't allow further modifications.`)
+    }
+  }
+
+  /** Trigger Feedback Service when incident is closed */
+  async triggerFeedbackService(incidentID) {
+    try {
+      const { Incidents, Customers } = this.entities;
+      
+      // Get the incident details
+      const incident = await SELECT.one.from(Incidents, i => {
+        i('*');
+        i.customer(c => c('*'));
+      }).where({ ID: incidentID });
+      
+      if (!incident) {
+        logger.error(`Incident with ID ${incidentID} not found`);
+        return;
+      }
+      
+      // Calculate processing time
+      const createdAt = new Date(incident.createdAt);
+      const now = new Date();
+      const processingTimeHours = Math.round((now - createdAt) / (1000 * 60 * 60));
+      
+      // Prepare data for feedback service
+      const feedbackData = {
+        originalIncidentID: incidentID,
+        title: incident.title || 'Unknown Title',
+        customer: incident.customer ? incident.customer.name || `${incident.customer.firstName} ${incident.customer.lastName}`.trim() : 'Unknown Customer',
+        customerEmail: incident.customer ? incident.customer.email : '',
+        urgency: incident.urgency_code || 'M',
+        category: 'General', // Default category, can be enhanced
+        processingTime: processingTimeHours
+      };
+      
+      // Use CAP's destination service approach with JWT forwarding
+      await this.callFeedbackServiceViaDestination(feedbackData);
+      
+    } catch (error) {
+      logger.error(`Error triggering feedback service for incident ${incidentID}:`, error);
+    }
+  }
+
+  /** 
+   * Call feedback service using SAP Cloud SDK with destination and JWT forwarding
+   * This is the enterprise-grade approach for service-to-service communication
+   */
+  async callFeedbackServiceViaDestination(feedbackData) {
+    try {
+      // Import SAP Cloud SDK modules
+      const { executeHttpRequest } = require('@sap-cloud-sdk/http-client');
+      const { getDestination } = require('@sap-cloud-sdk/connectivity');
+      
+      // Get the current request context to forward JWT token
+      const req = cds.context?.req;
+      if (!req) {
+        logger.warn('No request context available for JWT forwarding');
+      }
+      
+      // Method 1: Using destination service (Recommended for production)
+      try {
+        const destination = await getDestination({
+          destinationName: 'feedback-service-dest',
+          jwt: req?.headers?.authorization?.replace('Bearer ', '') // Forward JWT token
+        });
+        
+        const response = await executeHttpRequest(
+          destination,
+          {
+            method: 'POST',
+            url: '/odata/v4/feedback/createClosedIncident',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            data: feedbackData
+          }
+        );
+        
+        logger.info(`Successfully created closed incident entry via destination service`);
+        return response.data;
+        
+      } catch (destError) {
+        logger.warn(`Destination service call failed: ${destError.message}`);
+        
+        // Method 2: Fallback to direct service binding (for local development)
+        return await this.callFeedbackServiceDirectly(feedbackData, req);
+      }
+      
+    } catch (error) {
+      logger.error('Error calling feedback service:', error);
+      throw error;
+    }
+  }
+  
+  /**
+   * Fallback method for local development or when destination service is not available
+   */
+  async callFeedbackServiceDirectly(feedbackData, req) {
+    try {
+      // Try to connect to feedback service using CAP service binding
+      const feedbackService = await cds.connect.to('FeedbackService');
+      
+      if (feedbackService) {
+        // Use CAP service-to-service communication
+        const result = await feedbackService.send('createClosedIncident', feedbackData);
+        logger.info('Successfully called feedback service via CAP binding');
+        return result;
+      } else {
+        // Final fallback to HTTP call with JWT forwarding
+        const { executeHttpRequest } = require('@sap-cloud-sdk/http-client');
+        
+        const feedbackServiceUrl = process.env.FEEDBACK_SERVICE_URL || 'http://localhost:4006';
+        
+        const headers = {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        };
+        
+        // Forward JWT token if available
+        if (req?.headers?.authorization) {
+          headers['Authorization'] = req.headers.authorization;
+        }
+        
+        const response = await executeHttpRequest(
+          { url: feedbackServiceUrl },
+          {
+            method: 'POST',
+            url: '/odata/v4/feedback/createClosedIncident',
+            headers,
+            data: feedbackData
+          }
+        );
+        
+        logger.info('Successfully called feedback service via HTTP fallback');
+        return response.data;
+      }
+      
+    } catch (error) {
+      logger.error('Direct service call failed:', error);
+      throw error;
     }
   }
 

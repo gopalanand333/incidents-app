@@ -1,0 +1,30 @@
+{
+  "Name": "feedback-service-dest",
+  "Type": "HTTP",
+  "URL": "https://your-feedback-service.cfapps.eu10.hana.ondemand.com",
+  "Authentication": "OAuth2JWTBearer",
+  "ProxyType": "Internet",
+  "Description": "Destination for Feedback Microservice",
+  "Properties": [
+    {
+      "Name": "HTML5.DynamicDestination",
+      "Value": "true"
+    },
+    {
+      "Name": "HTML5.ForwardAuthToken",
+      "Value": "true"
+    },
+    {
+      "Name": "OAuth2.TokenServiceURL",
+      "Value": "https://your-subaccount.authentication.eu10.hana.ondemand.com/oauth/token"
+    },
+    {
+      "Name": "OAuth2.ClientId",
+      "Value": "your-client-id"
+    },
+    {
+      "Name": "OAuth2.ClientSecret",
+      "Value": "your-client-secret"
+    }
+  ]
+}
