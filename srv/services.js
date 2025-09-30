@@ -103,7 +103,8 @@ async onCustomerRead(req) {
     // Check if incident is being closed
     if (req.data.status_code === 'C' && status_code !== 'C') {
       logger.info("Incident is being closed, triggering feedback service...");
-      await this.triggerFeedbackService(req.data.ID);
+      // Pass the request context to maintain authentication context
+      await this.triggerFeedbackService(req.data.ID, req);
     }
     
     if (status_code === 'C'){
@@ -119,7 +120,7 @@ async onCustomerRead(req) {
   }
 
   /** Trigger Feedback Service when incident is closed */
-  async triggerFeedbackService(incidentID) {
+  async triggerFeedbackService(incidentID, originalReq) {
     try {
       const { Incidents, Customers } = this.entities;
       
@@ -153,21 +154,37 @@ async onCustomerRead(req) {
       // Get feedback service URL from environment (set by MTA deployment)
       const feedbackServiceUrl = process.env.FEEDBACK_SERVICE_URL || 'http://localhost:4006';
       
-      // Get the current request context to forward JWT token
-      const req = cds.context?.req;
-      
       // Prepare headers with JWT token forwarding
       const headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       };
       
-      // Forward JWT token if available in request context
-      if (req?.headers?.authorization) {
-        headers['Authorization'] = req.headers.authorization;
+      // CAP-compliant JWT token forwarding approaches
+      let jwtToken = null;
+      
+      // Method 1: Get JWT from the original request (most reliable)
+      if (originalReq?.headers?.authorization) {
+        jwtToken = originalReq.headers.authorization;
+        logger.info('Using JWT token from original request');
+      }
+      // Method 2: Try to get JWT from current CAP context user
+      else if (originalReq?.user?.tokenInfo?.getTokenValue) {
+        jwtToken = `Bearer ${originalReq.user.tokenInfo.getTokenValue()}`;
+        logger.info('Using JWT token from CAP user context');
+      }
+      // Method 3: Try to get JWT from cds.context (fallback)
+      else if (cds.context?.req?.headers?.authorization) {
+        jwtToken = cds.context.req.headers.authorization;
+        logger.info('Using JWT token from CDS context');
+      }
+      
+      // Add JWT token to headers if available
+      if (jwtToken) {
+        headers['Authorization'] = jwtToken;
         logger.info('Forwarding JWT token to feedback service');
       } else {
-        logger.warn('No JWT token available for forwarding');
+        logger.warn('No JWT token available for forwarding - service call may fail if authentication is required');
       }
       
       // Make API call to feedback service with token forwarding
