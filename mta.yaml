@@ -160,6 +160,8 @@ resources:
   # Cloud Logging instance      
   - name: cls-logging-drain
     type: org.cloudfoundry.existing-service
+    parameters:
+      service-tags: ["cloud-logging", "Cloud Logging"]
   # Auto Scaler instance
   - name: xp265-auto
     type: org.cloudfoundry.existing-service
