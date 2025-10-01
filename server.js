@@ -1,4 +1,4 @@
-require('@sap/xotel-agent-ext-js/dist/common/tracer');
+const tracer = require("@sap/xotel-agent-ext-js");
 const app = require('express')()
 const fesr = require("@sap/fesr-to-otel-js");
 // Initialization of Exception Monitoring:
