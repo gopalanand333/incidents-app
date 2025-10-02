@@ -7,6 +7,8 @@ modules:
     type: nodejs
     path: gen/srv
     properties:
+      SAP_CALM_FESR_LOG_LEVEL: debug
+      SAP_CALM_DCI_LOG_LEVEL: debug
       SAP_CALM_SERVICE_NAME: incident-management-srv
       SAP_CALM_SERVICE_TYPE: SAP_CP_CF
       OTEL_RESOURCE_ATTRIBUTES: sap.tenancy.tenant_id=52fbaf37-c604-4abf-8580-c97703835dc8
