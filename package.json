@@ -61,7 +61,9 @@
       },
       "OP_API_BUSINESS_PARTNER_SRV": {
         "kind": "odata-v2",
-        "model": "srv/external/OP_API_BUSINESS_PARTNER_SRV",
+        "[development]": {
+          "model": "srv/external/OP_API_BUSINESS_PARTNER_SRV"
+        },
         "[production]": {
           "credentials": {
             "destination": "incidents-api-access",
