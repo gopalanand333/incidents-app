@@ -38,7 +38,7 @@
     "rimraf": "^5.0.5"
   },
   "scripts": {
-    "start": "node ${NODE_ARGS} ./node_modules/@sap/cds/bin/serve",
+    "start": "node ${NODE_ARGS} ./node_modules/.bin/cds-serve",
     "watch-incidents": "cds watch --open incidents/webapp/index.html?sap-ui-xx-viewCache=false",
     "undeploy": "cf undeploy incident-management --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rimraf resources mta_archives && mbt build --mtar archive",
