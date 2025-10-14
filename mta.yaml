@@ -34,7 +34,7 @@ modules:
               - metric_type: throughput
                 breach_duration_secs: 300
                 threshold: 10
-                operator: "<="
+                operator: "<"
                 adjustment: "-2"
       - name: cls-logging-drain
     provides:
