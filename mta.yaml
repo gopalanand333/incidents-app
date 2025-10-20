@@ -32,7 +32,7 @@ modules:
                 operator: ">="
                 adjustment: "+2"
               - metric_type: throughput
-                breach_duration_secs: 300
+                breach_duration_secs: 180
                 threshold: 10
                 operator: "<"
                 adjustment: "-2"
