@@ -34,7 +34,7 @@ cds.serve('all').in(app).then(() => {
 cds.on("served", async () => {
     try {
         const { DELETE } = cds.ql;
-        await cds.run(DELETE.from("sap.capire.incidents.Incidents").where({title: 'test1234'}));
+        await cds.run(DELETE.from("sap.capire.incidents.Incidents").where({title: 'test123'}));
         console.log("Database cleaned successfully");
     } catch (error) {
         console.error("Failed to clean database:", error);
