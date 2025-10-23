@@ -36,7 +36,7 @@ modules:
                 threshold: 10
                 operator: "<"
                 adjustment: "-2"
-      - name: cls-logging-drain
+      - name: xp265-cl
     provides:
       - name: srv-api
         properties:
@@ -160,10 +160,8 @@ resources:
         xsappname: incident-management-${org}-${space}
         tenant-mode: dedicated
   # Cloud Logging instance      
-  - name: cls-logging-drain
+  - name: xp265-cl
     type: org.cloudfoundry.existing-service
-    parameters:
-      service-tags: ["cloud-logging", "Cloud Logging"]
   # Auto Scaler instance
   - name: xp265-auto
     type: org.cloudfoundry.existing-service
