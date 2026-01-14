@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@sap/cds": ">=9.4",
-    "express": "^5"
+    "express": ">=4"
   },
   "devDependencies": {
     "@cap-js/cds-test": "*",
