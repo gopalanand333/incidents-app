@@ -2,8 +2,7 @@
   "name": "@capire/incidents",
   "version": "1.0.0",
   "dependencies": {
-    "@sap/cds": ">=9.4",
-    "express": ">=4"
+    "@sap/cds": ">=9"
   },
   "devDependencies": {
     "@cap-js/cds-test": "*",
