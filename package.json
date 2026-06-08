@@ -6,8 +6,8 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@sap/cds": "^9.4.3",
-    "@cap-js/hana": "^2.3.2",
+    "@sap/cds": "^9",
+    "@cap-js/hana": "^2.8.0",
     "hdb": "^2.26.1",
     "@cap-js/telemetry": "git+https://github.com/cap-js/telemetry.git#SpanKind.SERVER",
     "@grpc/grpc-js": "^1.14.0",
@@ -33,8 +33,8 @@
   },
   "devDependencies": {
     "@cap-js/sqlite": "^2.0.3",
-    "@sap/cds-dk": "^9.3.2",
-    "@sap/ux-specification": "^1.136.7",
+    "@sap/cds-dk": "^9",
+    "@sap/ux-specification": "latest",
     "rimraf": "^5.0.5"
   },
   "scripts": {
