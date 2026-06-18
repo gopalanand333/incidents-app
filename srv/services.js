@@ -9,12 +9,12 @@ class ProcessorService extends cds.ApplicationService {
     this.before("CREATE", "Incidents", (req) => this.changeUrgencyDueToSubject(req.data));
     this.on('READ', 'Customers', (req) => this.onCustomerRead(req));
     this.on(['CREATE','UPDATE'], 'Incidents', (req, next) => this.onCustomerCache(req, next));
-    try {
+    //try {
       this.S4bupa = await cds.connect.to('OP_API_BUSINESS_PARTNER_SRV');
-    } catch (err) {
-      logger.error('Failed to connect to Business Partner service:', err.message);
-      this.S4bupa = null; // Service will be unavailable
-    }
+    // } catch (err) {
+    //   logger.error('Failed to connect to Business Partner service:', err.message);
+    //   this.S4bupa = null; // Service will be unavailable
+    // }
     this.remoteService = await cds.connect.to('RemoteService');
     return super.init();
   }
@@ -24,10 +24,10 @@ class ProcessorService extends cds.ApplicationService {
   const newCustomerId = req.data.customer_ID;
   const result = await next();
 
-  if (!this.S4bupa) {
-    logger.warn('Business Partner service unavailable - skipping customer cache');
-    return result;
-  }
+  // if (!this.S4bupa) {
+  //   logger.warn('Business Partner service unavailable - skipping customer cache');
+  //   return result;
+  // }
 
   const { BusinessPartner } = this.remoteService.entities;
   if (newCustomerId && newCustomerId !== "") {
